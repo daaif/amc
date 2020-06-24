@@ -32,6 +32,7 @@ class Grade extends AmcProcessGrade
      * @return boolean
      */
     public function grade() {
+
         $this->actions = array(
             'scoringset' => (boolean) $this->amcPrepareBareme(),
             'scoring' => (boolean) $this->amcNote(),

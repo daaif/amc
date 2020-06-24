@@ -57,7 +57,8 @@ class AmcProcessGrade extends AmcProcess
             '--n-copies', (string) $this->quizz->amcparams->copies,
             '--mode', 'b',
             '--data', $pre . '/data',
-            '--filtered-source', $pre . '/prepare-source_filtered.tex', // for AMC-txt, the LaTeX will be written in this file
+            /** @modified from /prepare-source-filtered to .. */
+            '--filtered-source', $pre . '/prepare-source.tex', // for AMC-txt, the LaTeX will be written in this file
             '--progression-id', 'bareme',
             '--progression', '1',
             '--with', $path,
@@ -196,7 +197,10 @@ class AmcProcessGrade extends AmcProcess
             //'--noms-encodage', 'UTF-8',
             //'--csv-build-name', 'surname name',
         );
-        $res = $this->shellExecAmc('annote', $parameters,true);
+        /**
+         * Chage cmd from anote to anotate.
+         */
+        $res = $this->shellExecAmc('annotate', $parameters,true);
         if ($res) {
             $this->log('annote', '');
         }
@@ -347,27 +351,33 @@ class AmcProcessGrade extends AmcProcess
      */
     protected function writeFileStudentsList() {
 	global $DB;
-        
         $studentList = fopen($this->workdir . self::PATH_STUDENTLIST_CSV, 'w');
+
         if (!$studentList) {
             return false;
         }
         fputcsv($studentList, array('surname', 'name','patronomic', 'id', 'email','moodleid','groupslist'), self::CSV_SEPARATOR);
 	$codelength = get_config('mod_automultiplechoice', 'amccodelength');
-    $sql = "SELECT u.idnumber ,u.firstname, u.lastname,u.alternatename,u.email, u.id as id , GROUP_CONCAT(DISTINCT g.name ORDER BY g.name) as groups_list FROM {user} u "
-                ."JOIN {user_enrolments} ue ON (ue.userid = u.id) "
+
+	/** fix  sql query error */
+
+	$sql = "SELECT u.idnumber ,u.firstname, u.lastname,u.alternatename,u.email, u.id as id"
+        .", GROUP_CONCAT(DISTINCT g.name) as groups_list "
+        ."FROM {user} u "
+        ."JOIN {user_enrolments} ue ON (ue.userid = u.id) "
 		."JOIN {enrol} e ON (e.id = ue.enrolid) "
-		."LEFT JOIN  groups_members gm ON u.id=gm.userid "
-		."LEFT JOIN groups g ON g.id=gm.groupid  AND g.courseid=e.courseid " 
+		."LEFT JOIN  {groups_members} gm ON u.id=gm.userid "
+		."LEFT JOIN {groups} g ON g.id=gm.groupid  AND g.courseid=e.courseid "
 		."WHERE u.idnumber != '' AND e.courseid = ? "
 		."GROUP BY u.id";
-        $users=  $DB->get_records_sql($sql, array($this->quizz->course));
+
+	    $users = $DB->get_records_sql($sql, array($this->quizz->course));
 
         if (!empty($users)) {
 		foreach ($users as $user) {
                 $nums=explode(";",$user->idnumber);
                 foreach ($nums as $num){
-                    fputcsv($studentList, array($user->lastname, $user->firstname,$user->alternatename, substr($num,-1*$codelength), $user->email, $user->id, $user->groups_list), self::CSV_SEPARATOR,'"');
+                    fputcsv($studentList, array($user->lastname, $user->firstname,$user->alternatename, substr($num,-1*$codelength), $user->email, $user->id), self::CSV_SEPARATOR,'"');
                 }
             }
         }
