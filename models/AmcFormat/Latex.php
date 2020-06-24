@@ -169,9 +169,12 @@ EOL;
         if ($question->scoring) {
             $scoring = $question->scoring;
         }
-        else {
-           $scoring = $this->scoringset->findMatchingRule($question)->getExpression($question);
-        }
+        /** @todo
+         * fix FindMatchingRule
+         */
+        //else {
+        //   $scoring = $this->scoringset->findMatchingRule($question)->getExpression($question);
+        //}
         if (!$scoring) {
             $scoring = 'b=' . $question->score;
         } 
