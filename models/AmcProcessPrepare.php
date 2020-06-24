@@ -67,6 +67,7 @@ class AmcProcessPrepare extends AmcProcess
         $pre = $this->workdir;
         $res = $this->shellExecAmc('prepare',
             array(
+                '--data', $pre . '/data',
                 '--n-copies', (string) $this->quizz->amcparams->copies,
                 '--with', $path,
                 '--filter', $format->getFiltername(),
