@@ -201,7 +201,9 @@ class AmcProcessGrade extends AmcProcess
             '--verdict-question', '"%s / %m"',
             '--no-rtl',
             '--no-changes-only',
-            '--fich-noms', $pre . self::PATH_STUDENTLIST_CSV,
+            '--csv-build-name ', 'A:id',
+            '--filename-model', '(N).pdf'
+            //'--fich-noms', $pre . self::PATH_STUDENTLIST_CSV,
             //'--noms-encodage', 'UTF-8',
             //'--csv-build-name', 'surname name',
         );
@@ -278,7 +280,7 @@ class AmcProcessGrade extends AmcProcess
             '--liste', $pre . self::PATH_STUDENTLIST_CSV,
             '--encodage-liste', 'UTF-8',
             '--liste-key', 'id',
-            '--csv-build-name', '(nom|surname) (prenom|name)',
+            '--csv-build-name', '(student.number)', //'(nom|surname) (prenom|name)',
             '--notes-id', 'student.number',
         );
         return $this->shellExecAmc('association-auto', $parameters);
@@ -295,6 +297,7 @@ class AmcProcessGrade extends AmcProcess
 	    //array_map('unlink', glob($pre.  "/cr/corrections/jpg/*.jpg"));
         array_map('unlink', glob($pre.  "/cr/corrections/pdf/*.pdf"));
         $allcopy = array_map('get_code',glob($pre . '/cr/name-*.jpg'));
+
 
         foreach($allcopy as $copy){
             $fp = fopen($pre . '/student.txt', 'w');
@@ -386,7 +389,16 @@ class AmcProcessGrade extends AmcProcess
 		foreach ($users as $user) {
                 $nums=explode(";",$user->idnumber);
                 foreach ($nums as $num){
-                    fputcsv($studentList, array($user->lastname, $user->firstname,$user->alternatename, substr($num,-1*$codelength), $user->email, $user->id), self::CSV_SEPARATOR,'"');
+                    fputcsv($studentList,
+                        array(
+                            $user->lastname,
+                            $user->firstname,$user->alternatename,
+                            substr($num,-1*$codelength),
+                            $user->email,
+                            $user->id
+                        ),
+                        self::CSV_SEPARATOR,
+                        '"');
                 }
             }
         }
@@ -481,7 +493,8 @@ class AmcProcessGrade extends AmcProcess
      * @return boolean
      */
     public function hasAnotatedFiles() {
-        return (file_exists($this->workdir . '/cr/corrections/pdf/' . $this->normalizeFilename('corrections')));
+        //return (file_exists($this->workdir . '/cr/corrections/pdf/' . $this->normalizeFilename('corrections')));
+        return  count(glob($this->workdir . '/cr/corrections/pdf/*.pdf' )) > 0;
     }
 
     /**
@@ -489,7 +502,7 @@ class AmcProcessGrade extends AmcProcess
      * @return int
      */
     public function countIndividualAnotations() {
-        return count(glob($this->workdir . '/cr/corrections/pdf/cr-*.pdf'));
+        return count(glob($this->workdir . '/cr/corrections/pdf/*.pdf'));
     }
 
     /**
@@ -524,7 +537,7 @@ class AmcProcessGrade extends AmcProcess
     public function getUsersIdsHavingAnotatedSheets() {
         global $DB;
 
-        $files = glob($this->workdir . '/cr/corrections/pdf/cr-*.pdf');
+        $files = glob($this->workdir . '/cr/corrections/pdf/*.pdf');
         $userids = array();
         foreach ($files as $file) {
 	    $userids[] = (int) substr($file,3,-4);
