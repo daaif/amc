@@ -82,11 +82,11 @@ class AmcProcessPrepare extends AmcProcess
             )
         );
 
-        if ($res) {
-            $amclog = Log::build($this->quizz->id);
-            $this->log('prepare:pdf', 'catalog corrige sujet');
-            $amclog->write('pdf');
-        } else {
+
+        $amclog = Log::build($this->quizz->id);
+        $this->log('prepare:pdf', 'catalog corrige sujet');
+        $amclog->write('pdf');
+        if (!$res) { {
             $this->errors[] = "Exec of `auto-multiple-choice prepare` failed. Is AMC installed?";
         }
         return $res;
@@ -144,9 +144,9 @@ class AmcProcessPrepare extends AmcProcess
                 );
         // $params[] = '--split'; // M#2076 a priori jamais nécessaire
         $res = $this->shellExecAmc('imprime', $params);
-        if ($res) {
-            $this->log('imprime', '');
-        }
+
+        $this->log('imprime', '');
+
         return $res;
     }
 

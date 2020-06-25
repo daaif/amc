@@ -94,9 +94,9 @@ class AmcProcess
                     '--src', $pre . '/prepare-calage.xy',
                 )
         );
-        if ($res) {
-            $this->log('meptex', '');
-        }
+
+        $this->log('meptex', '');
+
         return $res;
     }
 

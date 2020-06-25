@@ -127,9 +127,9 @@ class AmcProcessUpload extends AmcProcess
             );
         //echo "\n<br> auto-multiple-choice analyse " . join (' ', $parameters) . "\n<br>";
         $res = $this->shellExecAmc('analyse', $parameters);
-        if ($res) {
-            $this->log('analyse', 'OK.');
-        }
+
+        $this->log('analyse', 'OK.');
+
         return $res;
     }
 }

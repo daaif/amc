@@ -66,9 +66,9 @@ class AmcProcessGrade extends AmcProcess
             $pre . '/' . $this->format->getFilename()
             );
         $res = $this->shellExecAmc('prepare', $parameters);
-        if ($res) {
-            $this->log('prepare:bareme', 'OK.');
-        }
+
+        $this->log('prepare:bareme', 'OK.');
+
         return $res;
     }
 
@@ -82,7 +82,7 @@ class AmcProcessGrade extends AmcProcess
             '--data', $pre . '/data',
             '--progression-id', 'notation',
             '--progression', '1',
-            '--seuil', '0.86', // black ratio threshold
+            '--seuil', '0.6', // black ratio threshold
             '--grain', $this->quizz->amcparams->gradegranularity,
             '--arrondi', $this->quizz->amcparams->graderounding,
             '--notemin', $this->quizz->amcparams->minscore,
@@ -92,9 +92,9 @@ class AmcProcessGrade extends AmcProcess
             '--postcorrect-copy', '',    //FIXME inutile ?
             );
         $res = $this->shellExecAmc('note', $parameters);
-        if ($res) {
-            $this->log('note', 'OK.');
-        }
+
+        $this->log('note', 'OK.');
+
         return $res;
     }
 
@@ -151,10 +151,10 @@ class AmcProcessGrade extends AmcProcess
         ));
         $res = $this->shellExecAmc('export', $parametersCsv) && $this->shellExecAmc('export', $parametersOds);
         chdir($oldcwd);
-        if ($res) {
-            $this->log('export', 'scoring.csv');
-            Log::build($this->quizz->id)->write('grading');
-        }
+
+        $this->log('export', 'scoring.csv');
+        Log::build($this->quizz->id)->write('grading');
+
         if (!file_exists($csvfile) || !file_exists($odsfile)) {
             $this->errors[] = "Les fichiers CSV et ODS n'ont pu être générés. Consultez l'administrateur.";
             return false;
@@ -201,9 +201,9 @@ class AmcProcessGrade extends AmcProcess
          * Chage cmd from anote to anotate.
          */
         $res = $this->shellExecAmc('annotate', $parameters,true);
-        if ($res) {
-            $this->log('annote', '');
-        }
+
+        $this->log('annote', '');
+
         return $res;
     }
      /**
@@ -250,11 +250,11 @@ class AmcProcessGrade extends AmcProcess
 		    $addon
 	    );
 	    $res = $this->shellExecAmc('regroupe', $parameters);
-	    if ($res) {
-		    $this->log('regroup', '');
-		    $amclog = Log::build($this->quizz->id);
-		    $amclog->write('correction');
-	    }
+
+        $this->log('regroup', '');
+        $amclog = Log::build($this->quizz->id);
+        $amclog->write('correction');
+
 	    return $res;
     }
 
@@ -284,21 +284,21 @@ class AmcProcessGrade extends AmcProcess
      */
     protected function amcAnnotePdf() {
 	$pre = $this->workdir;    
-	//array_map('unlink', glob($pre.  "/cr/corrections/jpg/*.jpg"));
+	    //array_map('unlink', glob($pre.  "/cr/corrections/jpg/*.jpg"));
         array_map('unlink', glob($pre.  "/cr/corrections/pdf/*.pdf"));
         $allcopy = array_map('get_code',glob($pre . '/cr/name-*.jpg'));
-	foreach($allcopy as $copy){
-		$fp = fopen($pre . '/student.txt', 'w');
-		fwrite($fp,str_replace('_',':',$copy));
-		fclose($fp);	
-		if (!$this->amcAnnote()) {
-			return false;
-		}
-		if (!$this->amcRegroupe(false)) {
-			return false;
-		}
-	}
-	return $this->amcRegroupe(true);
+        foreach($allcopy as $copy){
+            $fp = fopen($pre . '/student.txt', 'w');
+            fwrite($fp,str_replace('_',':',$copy));
+            fclose($fp);
+            if (!$this->amcAnnote()) {
+                return false;
+            }
+            if (!$this->amcRegroupe(false)) {
+                return false;
+            }
+        }
+        return $this->amcRegroupe(true);
     }
 
     /**
@@ -321,22 +321,22 @@ class AmcProcessGrade extends AmcProcess
         }
         $getCol = array_flip($header);
  
-	$this->grades = array();
+	    $this->grades = array();
         while (($data = fgetcsv($input, 0, self::CSV_SEPARATOR)) !== FALSE) {
             $idnumber = $data[$getCol['student.number']];
-	    $userid=null;
-	    $userid = $data[$getCol['moodleid']];
-	    if ($userid) {
-		    $this->usersknown++;
-	    } else {
-		    $this->usersunknown++;
-	    }
-	    $this->grades[] = (object) array(
-		'userid' => $userid,
+            $userid=null;
+            $userid = $data[$getCol['moodleid']];
+            if ($userid) {
+                $this->usersknown++;
+            } else {
+                $this->usersunknown++;
+            }
+            $this->grades[] = (object) array(
+                'userid' => $userid,
                 'rawgrade' => str_replace(',', '.', $data[7])
-	);
+	        );
         }
-	fclose($input);
+	    fclose($input);
         return true;
     }
 
@@ -350,18 +350,18 @@ class AmcProcessGrade extends AmcProcess
      * @return boolean Success?
      */
     protected function writeFileStudentsList() {
-	global $DB;
+	    global $DB;
         $studentList = fopen($this->workdir . self::PATH_STUDENTLIST_CSV, 'w');
 
         if (!$studentList) {
             return false;
         }
         fputcsv($studentList, array('surname', 'name','patronomic', 'id', 'email','moodleid','groupslist'), self::CSV_SEPARATOR);
-	$codelength = get_config('mod_automultiplechoice', 'amccodelength');
+	    $codelength = get_config('mod_automultiplechoice', 'amccodelength');
 
-	/** fix  sql query error */
+	    /** fix  sql query error */
 
-	$sql = "SELECT u.idnumber ,u.firstname, u.lastname,u.alternatename,u.email, u.id as id"
+	    $sql = "SELECT u.idnumber ,u.firstname, u.lastname,u.alternatename,u.email, u.id as id"
         .", GROUP_CONCAT(DISTINCT g.name) as groups_list "
         ."FROM {user} u "
         ."JOIN {user_enrolments} ue ON (ue.userid = u.id) "
