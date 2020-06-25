@@ -175,12 +175,20 @@ class AmcProcessGrade extends AmcProcess
         if (!is_dir($pre. '/cr/corrections/pdf')) {
             mkdir($pre. '/cr/corrections/pdf', 0777, true);
         }
+        /**
+         * Fix anotate cmd params.
+         */
+
         $parameters = array(
             '--projet', $pre,
+            '--pdf-dir', $pre. '/cr/corrections/pdf',
             '--ch-sign', '4',
             '--cr', $pre . '/cr',
             '--data', $pre.'/data',
-            '--id-file', $pre. '/student.txt'  , // undocumented option: only work with students whose ID is in this file
+            '--names-file', $pre . self::PATH_STUDENTLIST_CSV,
+            '--subject', $pre. '/' . $this->normalizeFilename('sujet'),
+            //'--id-file', $pre. '/student.txt'  , // undocumented option: only work with students whose ID is in this file
+            '--compose', '2',
             '--taille-max', '1000x1500',
             '--qualite', '90',
             '--line-width', '2',
@@ -287,6 +295,7 @@ class AmcProcessGrade extends AmcProcess
 	    //array_map('unlink', glob($pre.  "/cr/corrections/jpg/*.jpg"));
         array_map('unlink', glob($pre.  "/cr/corrections/pdf/*.pdf"));
         $allcopy = array_map('get_code',glob($pre . '/cr/name-*.jpg'));
+
         foreach($allcopy as $copy){
             $fp = fopen($pre . '/student.txt', 'w');
             fwrite($fp,str_replace('_',':',$copy));

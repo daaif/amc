@@ -58,6 +58,7 @@ class Grade extends AmcProcessGrade
     public function anotate() {
         global $DB;
         $this->actions->anotate = $this->amcAnnotePdf();
+
         if (!$this->actions->anotate) {
             return false;
         }
