@@ -50,6 +50,7 @@ if (!$process->isGraded() || $action === 'grade') {
     redirect(new moodle_url('grading.php', array('a' => $quizz->id)));
 } else if ($action === 'notification') {
     $studentsto = $process->getUsersIdsHavingAnotatedSheets();
+
     $okSends = $process->sendAnotationNotification($studentsto);
     amc\FlashMessageManager::addMessage(
         ($okSends == count($studentsto)) ? 'success' : 'error',
@@ -116,11 +117,11 @@ if ($process->hasAnotatedFiles()) {
     echo $OUTPUT->heading("Accès aux copies", 3);
     echo "<p>Permettre l'accès de chaque étudiant</p>\n";
     echo '<form action="?a=' . $quizz->id .'" method="post">' . "\n";
-    echo '<ul>';
+    echo '<ul style="list-style: none">';
     $ckcopie = ($quizz->studentaccess ? 'checked="checked"' : '');
     $ckcorrige = ($quizz->corrigeaccess ? 'checked="checked"' : '');
-    echo '<li><input type="checkbox" name="studentaccess" ' .$ckcopie. '>à sa copie corrigée annotée</input></li>' ;
-    echo '<li><input type="checkbox" name="corrigeaccess" ' .$ckcorrige. '>au corrigé complet</input></li>' ;
+    echo '<li><label><input type="checkbox" name="studentaccess" ' .$ckcopie. '> &nbsp;  à sa copie corrigée annotée</input></label></li>' ;
+    echo '<li><label><input type="checkbox" name="corrigeaccess" ' .$ckcorrige. '> &nbsp;   au corrigé complet</input></label></li>' ;
     echo '</ul>';
     echo '<input type="hidden" name="action" value="setstudentaccess" value="1" />';
     echo '<button type="submit">Permettre ces accès</button>';

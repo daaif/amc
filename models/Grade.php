@@ -66,7 +66,7 @@ class Grade extends AmcProcessGrade
     }
 
     /**
-     * @return StdClass
+     * @return object
      */
     public function getResults() {
         return (object) array(

@@ -41,6 +41,7 @@ class ScoringSet
         foreach ($lines as $line) {
             $new->rules[] = ScoringRule::buildFromConfig($line);
         }
+
         return $new;
     }
 

@@ -66,9 +66,9 @@ class AmcProcessGrade extends AmcProcess
             $pre . '/' . $this->format->getFilename()
             );
         $res = $this->shellExecAmc('prepare', $parameters);
-
-        $this->log('prepare:bareme', 'OK.');
-
+        if($res) {
+            $this->log('prepare:bareme', 'OK.');
+        }
         return $res;
     }
 
@@ -102,7 +102,8 @@ class AmcProcessGrade extends AmcProcess
      * Shell-executes 'amc export' to get a csv file
      * @return bool
      */
-    protected function amcExport() {
+    protected function amcExport()
+    {
         $pre = $this->workdir;
         if (!is_writable($pre . '/exports')) {
             $this->errors[] = "Le répertoire /exports n'est pas accessible en écriture. Contactez l'administrateur.";
@@ -152,8 +153,10 @@ class AmcProcessGrade extends AmcProcess
         $res = $this->shellExecAmc('export', $parametersCsv) && $this->shellExecAmc('export', $parametersOds);
         chdir($oldcwd);
 
-        $this->log('export', 'scoring.csv');
-        Log::build($this->quizz->id)->write('grading');
+        if ($res){
+            $this->log('export', 'scoring.csv');
+            Log::build($this->quizz->id)->write('grading');
+        }
 
         if (!file_exists($csvfile) || !file_exists($odsfile)) {
             $this->errors[] = "Les fichiers CSV et ODS n'ont pu être générés. Consultez l'administrateur.";
@@ -167,7 +170,7 @@ class AmcProcessGrade extends AmcProcess
      * fills the cr/corrections/jpg directory with individual annotated copies
      * @return bool
      */
-    private function amcAnnote() {
+    private function amcAnnote($single = true) {
         $pre = $this->workdir;
         if (!is_dir($pre. '/cr/corrections/jpg')) { // amc-annote will silently fail if the dir does not exist
             mkdir($pre. '/cr/corrections/jpg', 0777, true);
@@ -179,15 +182,25 @@ class AmcProcessGrade extends AmcProcess
          * Fix anotate cmd params.
          */
 
-        $parameters = array(
+        if ($single) {
+            $addon = array(
+                '--single-output', $pre. '/' . $this->normalizeFilename('corrections'), // merge all sheets into one file that rules them all
+                '--sort', 'n'
+            );
+        } else {
+            $addon = array(
+                '--filename-model', 'Etudiant-(moodleid).pdf', // "(ID)" is replaced by the complete name
+            );
+        }
+
+
+        $parameters = array_merge( array(
             '--projet', $pre,
-            '--pdf-dir', $pre. '/cr/corrections/pdf',
             '--ch-sign', '4',
             '--cr', $pre . '/cr',
             '--data', $pre.'/data',
             '--names-file', $pre . self::PATH_STUDENTLIST_CSV,
             '--subject', $pre. '/' . $this->normalizeFilename('sujet'),
-            //'--id-file', $pre. '/student.txt'  , // undocumented option: only work with students whose ID is in this file
             '--compose', '2',
             '--taille-max', '1000x1500',
             '--qualite', '90',
@@ -199,21 +212,24 @@ class AmcProcessGrade extends AmcProcess
             '--pointsize-nl', '80',
             '--verdict', '%(ID) Note: %s/%m (score total : %S/%M)',
             '--verdict-question', '"%s / %m"',
-            '--no-rtl',
-            '--no-changes-only',
-            '--csv-build-name ', 'A:id',
-            '--filename-model', '(N).pdf'
+            //'--no-rtl',
+            //'--no-changes-only',
+            //'--csv-build-name ', '(A:id)',
+            //'--filename-model', '(ID).pdf'
             //'--fich-noms', $pre . self::PATH_STUDENTLIST_CSV,
             //'--noms-encodage', 'UTF-8',
             //'--csv-build-name', 'surname name',
-        );
+        ), $addon);
+
         /**
-         * Chage cmd from anote to anotate.
+         * Chage cmd from annote to annotate.
          */
         $res = $this->shellExecAmc('annotate', $parameters,true);
-
-        $this->log('annote', '');
-
+        if($res) {
+            $this->log('annote', '');
+            $amclog = Log::build($this->quizz->id);
+            $amclog->write('correction');
+        }
         return $res;
     }
      /**
@@ -223,11 +239,12 @@ class AmcProcessGrade extends AmcProcess
 	     *                     * @single bool
 	     *                          * @return bool
 	     *                               */
+    /*
     protected function amcRegroupe($single=true) {
 	    $pre = $this->workdir;
 	    if ($single) {
 		    $addon = array(
-			    '--single-output', $this->normalizeFilename('corrections'), // merge all sheets into one file that rules them all
+			    '--single-output', $pre. '/' . $this->normalizeFilename('corrections'), // merge all sheets into one file that rules them all
 		    );
 	    } else {
 		    $addon = array(
@@ -244,30 +261,30 @@ class AmcProcessGrade extends AmcProcess
 			    '--data', $pre.'/data',
 			    '--progression-id', 'regroupe',
 			    '--progression', '1',
-			    '--fich-noms', $pre . self::PATH_STUDENTLIST_CSV,
+			    '--names-file', $pre . self::PATH_STUDENTLIST_CSV,
 			    '--noms-encodage', 'UTF-8',
 			    '--sort', 'n',
 			    '--register',
 			    '--no-force-ascii'
-			    /* // useless with no-compose
+			    // useless with no-compose
 			  '--tex-src', $pre . '/' . $this->format->getFilename(),
 			'--filter', $this->format->getFilterName(),
 			      '--with', 'xelatex',
 			    '--filtered-source', $pre.'/prepare-source_filtered.tex',
 			 '--n-copies', (string) $this->quizz->amcparams->copies,
-		     */
+
 		    ),
 		    $addon
 	    );
 	    $res = $this->shellExecAmc('regroupe', $parameters);
-
-        $this->log('regroup', '');
-        $amclog = Log::build($this->quizz->id);
-        $amclog->write('correction');
-
+        if ($res) {
+            $this->log('regroup', '');
+            $amclog = Log::build($this->quizz->id);
+            $amclog->write('correction');
+        }
 	    return $res;
     }
-
+*/
      /**
      * Shell-executes 'amc association-auto'
      * @return bool
@@ -296,10 +313,15 @@ class AmcProcessGrade extends AmcProcess
 	$pre = $this->workdir;    
 	    //array_map('unlink', glob($pre.  "/cr/corrections/jpg/*.jpg"));
         array_map('unlink', glob($pre.  "/cr/corrections/pdf/*.pdf"));
-        $allcopy = array_map('get_code',glob($pre . '/cr/name-*.jpg'));
+        //$allcopy = array_map('get_code',glob($pre . '/cr/name-*.jpg'));
 
+        $this->amcAnnote();
+        $this->amcAnnote(false);
 
+        /*
+        unlink($pre . '/student.txt');
         foreach($allcopy as $copy){
+
             $fp = fopen($pre . '/student.txt', 'w');
             fwrite($fp,str_replace('_',':',$copy));
             fclose($fp);
@@ -310,7 +332,10 @@ class AmcProcessGrade extends AmcProcess
                 return false;
             }
         }
-        return $this->amcRegroupe(true);
+        */
+        return true; //$this->amcRegroupe(true);
+
+
     }
 
     /**
@@ -458,12 +483,11 @@ class AmcProcessGrade extends AmcProcess
     }
     
     protected function writeGrades(){
-
-	global $DB;
-	$grades = $this->getMarks();
-	$record = $DB->get_record('automultiplechoice', array('id' => $this->quizz->id), '*');
-	\automultiplechoice_grade_item_update($record, $grades);
-	return true;
+        global $DB;
+        $grades = $this->getMarks();
+        $record = $DB->get_record('automultiplechoice', array('id' => $this->quizz->id), '*');
+        \automultiplechoice_grade_item_update($record, $grades);
+        return true;
     } 
     
     
@@ -532,9 +556,38 @@ class AmcProcessGrade extends AmcProcess
 
     /**
      * returns a list of students with anotated answer sheets
-     * @return array of (int) user.id
+     * @return array
      */
     public function getUsersIdsHavingAnotatedSheets() {
+
+        $input = $this->fopenRead($this->workdir . self::PATH_AMC_CSV);
+        if (!$input) {
+            return false;
+        }
+        $header = fgetcsv($input, 0, self::CSV_SEPARATOR);
+        if (!$header) {
+            return false;
+        }
+        $getCol = array_flip($header);
+
+        $files = glob($this->workdir . '/cr/corrections/pdf/Etudiant-*.pdf');
+        if(!$files) return false;
+        $userIds = array();
+        while (($data = fgetcsv($input, 0, self::CSV_SEPARATOR)) !== FALSE) {
+            //$idnumber = $data[$getCol['student.number']];
+            $userId = $data[$getCol['moodleid']];
+            $filename = 'Etudiant-' . $userId . '.pdf';;
+            foreach ($files as $file) {
+                if(preg_match("/{$filename}/i", $file)) {
+                    $userIds[] = $userId;
+                    continue;
+                }
+            }
+        }
+        fclose($input);
+        return $userIds;
+        /*
+
         global $DB;
 
         $files = glob($this->workdir . '/cr/corrections/pdf/*.pdf');
@@ -544,6 +597,8 @@ class AmcProcessGrade extends AmcProcess
         }
 
         return $userids;
+
+        */
     }
 
     /**
@@ -605,7 +660,7 @@ class AmcProcessGrade extends AmcProcess
         global $USER;
         $url = new \moodle_url('/mod/automultiplechoice.php', array('a' => $this->quizz->id));
         
-        $eventdata = new \stdClass();
+        $eventdata = new \core\message\message;
         $eventdata->component         = 'mod_automultiplechoice';
         $eventdata->name              = 'anotatedsheet';
         $eventdata->userfrom          = $USER;
@@ -615,6 +670,8 @@ class AmcProcessGrade extends AmcProcess
         $eventdata->fullmessagehtml   = "Votre copie corrigée est disponible pour le QCM ". $this->quizz->name
                                       . " à l'adresse " . \html_writer::link($url, $url) ;
         $eventdata->smallmessage      = "Votre copie corrigée est disponible pour le QCM ". $this->quizz->name;
+        $eventdata->courseid = $this->quizz->course->id;
+
 
         // documentation : http://docs.moodle.org/dev/Messaging_2.0#Message_dispatching
         $count = 0;

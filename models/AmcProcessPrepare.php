@@ -84,16 +84,14 @@ class AmcProcessPrepare extends AmcProcess
             )
         );
 
-
-        $amclog = Log::build($this->quizz->id);
-        $this->log('prepare:pdf', 'catalog corrige sujet');
-        $amclog->write('pdf');
-        if (!$res) {
-
+        if ($res) {
+            $amclog = Log::build($this->quizz->id);
+            $this->log('prepare:pdf', 'catalog corrige sujet');
+            $amclog->write('pdf');
+        } else {
             $this->errors[] = "Exec of `auto-multiple-choice prepare` failed. Is AMC installed?";
-
-            return $res;
         }
+        return $res;
     }
 
         /**
