@@ -1,6 +1,10 @@
 Auto Multiple Choice (AMC) for Moodle
 =====================================
 
+### Updated at 20200628 By A. DAAIF
+### Forked from : 
+[UGA-DAPI](https://github.com/UGA-DAPI/moodle-mod-automultiplechoice) repository.
+
 This is an interface to use [AMC](http://home.gna.org/auto-qcm/) within Moodle.
 
 This Moodle module is intended for use with the moodle-local-questionssimplified module.
@@ -22,7 +26,7 @@ An admin can:
 
 A teacher can:
 
-* Configure various [AMC](http://home.gna.org/auto-qcm/) parameters (randomization, etc).
+* Configure various [AMC](https://www.auto-multiple-choice.net/) parameters (randomization, etc).
 * Select questions and assign a number of points to each one.
 * Select a scoring rule.
 * Configure various texts that appear on print sheets.
@@ -40,14 +44,18 @@ There will be French texts here and there.
 Requirements
 ------------
 
-Here are the requirements, expressed as Debian packages:
+Here are the requirements :
 
-* auto-multiple-choice 1.2.1-2 (Jessie)
-* texlive-xetex
-* lmodern
-* texlive-fonts-recommended
-* poppler-utils
+* auto-multiple-choice 1.4.0
+* Moodle 2020061500
+* Tested in Ubuntu 20.04
 
+Issues & todo
+------
+* Students access to there annotated copies
+* Students notifications
+
+Don't forget to install the associated plugin **moodle-local-questionssimplified** and the filter **moodle-filter-amc**
 
 Installation
 ------------
@@ -57,7 +65,7 @@ Put the source directory under the `mod/` path of a Moodle instance.
 ```
 cd /path/to/moodle
 cd mod
-git clone https://github.com/UPMF/moodle-mod-automultiplechoicce automultiplechoice
+git clone https://github.com/daaif/amc.git automultiplechoice
 ```
 
 Then connect as an admin, and Moodle will complete the installation.
