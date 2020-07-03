@@ -172,9 +172,9 @@ EOL;
         /** @todo
          * fix FindMatchingRule
          */
-        //else {
-        //   $scoring = $this->scoringset->findMatchingRule($question)->getExpression($question);
-        //}
+        else {
+           $scoring = $this->scoringset->findMatchingRule($question)->getExpression($question);
+        }
         if (!$scoring) {
             $scoring = 'b=' . $question->score;
         } 

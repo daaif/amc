@@ -280,7 +280,7 @@ function automultiplechoice_grade_item_update(stdClass $automultiplechoice, $gra
     $item['grademin']  = 0;
 
     grade_update('mod/automultiplechoice', $automultiplechoice->course, 'mod', 'automultiplechoice',
-            $automultiplechoice->id, 0, $grades, $item);
+        $automultiplechoice->id, 0, $grades, $item);
 }
 
 /**
@@ -371,30 +371,40 @@ function automultiplechoice_pluginfile($course, $cm, $context, $filearea, array 
     require_login($course, true, $cm);
 
     $filename = array_pop($args);
+
     $quizz = \mod\automultiplechoice\Quizz::findById($cm->instance);
     $process = new \mod\automultiplechoice\AmcProcessGrade($quizz, "latex");
 
     // First, the student use case: to download anotated answer sheet correction-0123456789-Surname.pdf
     // and corrigé
-    if (preg_match('/^cr-[0-9]*\.pdf$/', $filename)) {
+    if (preg_match('/^Etudiant-[0-9]*\.pdf$/', $filename)) {
         $target = $process->workdir . '/cr/corrections/pdf/' . $filename;
+
         if (!file_exists($target)) {
             send_file_not_found();
         }
         if (has_capability('mod/automultiplechoice:update', $context)
-            || (  $quizz->studentaccess && $USER->id.".pdf" === basename($filename))
-            ) {
+            || (  $quizz->studentaccess && file_exists($target))
+            //|| (  $quizz->studentaccess && $USER->id.".pdf" === basename($filename))
+        ) {
+
             send_file($target, $filename, 10, 0, false, false, 'application/pdf') ;
             return true;
         }
     }
-    if (preg_match('/^corrige-.*\.pdf$/', $filename)) {
-        if (   $quizz->corrigeaccess && file_exists("cr-".$USER->id.".pdf") )
-            {
-            send_file($process->workdir .'/'. $filename, $filename, 10, 0, false, false, 'application/pdf') ;
-            return true;
-         }
-     }
+
+    $target = $process->workdir . '/cr/corrections/pdf/' . $filename;
+    //if (preg_match('/^corrige-.*\.pdf$/', $filename)) {
+    //if (file_exists($process->workdir . '/' . $filename)) {
+    //if (   $quizz->corrigeaccess && file_exists("cr-".$USER->id.".pdf") )
+    if (  has_capability('mod/automultiplechoice:update', $context)
+        || ($quizz->corrigeaccess && file_exists($target)) )
+    {
+        send_file($target, $filename, 10, 0, false, false, 'application/pdf') ;
+        return true;
+    }
+
+// }
 
     // Then teacher only use cases
     require_capability('mod/automultiplechoice:update', $context);
@@ -403,13 +413,13 @@ function automultiplechoice_pluginfile($course, $cm, $context, $filearea, array 
     if (preg_match('/^(sujet|corrige|catalog)-.*\.pdf$/', $filename)) {
         send_file($process->workdir .'/'. $filename, $filename, 10, 0, false, false, 'application/pdf') ;
         return true;
-     } elseif (preg_match('/^sujets-.*\.zip$/', $filename)) {
+    } elseif (preg_match('/^sujets-.*\.zip$/', $filename)) {
         send_file($process->workdir . '/' . $filename, $filename, 10, 0, false, false, 'application/zip') ;
         return true;
-     } elseif (preg_match('/^corrections-.*\.pdf$/', $filename)) {
+    } elseif (preg_match('/^corrige-.*\.pdf$/', $filename)) {
         send_file($process->workdir . '/cr/corrections/pdf/' . $filename, $filename, 10, 0, false, false, 'application/pdf') ;
         return true;
-     } elseif (preg_match('/^cr-[0-9]*\.pdf$/', $filename)) {
+    } elseif (preg_match('/^cr-[0-9]*\.pdf$/', $filename)) {
         send_file($process->workdir . '/cr/corrections/pdf/' . $filename, $filename, 10, 0, false, false, 'application/pdf') ;
         return true;
     } elseif (preg_match('/\.csv$/', $filename)) {

@@ -231,7 +231,7 @@ class AmcProcess
             case 'sujets': // !!! plural 
                 return 'sujets-' . $this->normalizeText($this->quizz->name) . '.zip';
             case 'corrections':
-                return 'corrections-' . $this->normalizeText($this->quizz->name) . '.pdf';
+                return 'corrige-' . $this->normalizeText($this->quizz->name) . '.pdf';
         }
     }
 

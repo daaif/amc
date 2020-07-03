@@ -109,6 +109,7 @@ class ScoringSystem
         foreach ($blocks as $block) {
             $scoringSets[] = ScoringSet::buildFromConfig($block);
         }
+
         return $scoringSets;
     }
 }

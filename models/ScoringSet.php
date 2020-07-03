@@ -61,7 +61,6 @@ class ScoringSet
             }
         }
 
-        /** @todo Fix the No Rule marches exception  */
-        //throw new \Exception("No rule matches this question. Incomplete rules set.");
+        throw new \Exception("No rule matches this question. Incomplete rules set.");
     }
 }

@@ -174,7 +174,7 @@ class Quizz
         if ($this->qnumber <= 0) {
             $this->errors['qnumber'] = 'validate_positive_int';
         }
-        if ($this->score <= 0) {
+        if ($this->score < 0) {
             $this->errors['score'] = 'validate_positive_int';
         }
         if (isset($this->amcparams) && $this->amcparams instanceof AmcParams) {
