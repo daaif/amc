@@ -52,7 +52,7 @@ Here are the requirements :
 
 Issues & todo
 ------
-* Students access to there annotated copies
+*  ~~Students access to there annotated copies~~
 * Students notifications
 
 Don't forget to install the associated plugin **moodle-local-questionssimplified** and the filter **moodle-filter-amc**
