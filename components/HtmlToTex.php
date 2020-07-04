@@ -124,7 +124,8 @@ class HtmlToTex
         }
         if (!isset($wrapper)) {
             if (isset($this->mapping[$e->nodeName])) {
-                $wrapper = $this->mappingToTex($this->mapping[$e->nodeName], $e);
+                $wrapper = $this->
+                mappingToTex($this->mapping[$e->nodeName], $e);
             } else {
                 return "\n% Unknown tag {$e->nodeName}\n";
             }
@@ -177,6 +178,7 @@ class HtmlToTex
                 } else {
                     $function = "tag{$element->nodeName}ToTex";
                 }
+
                 return $this->$function($element);
             } else if (isset($mapping['tex'])) {
                 if ($mapping['type'] === 'macro') {
@@ -199,6 +201,8 @@ class HtmlToTex
         /**
          * @todo read src attr, save img into a local path (object attr), then use includegraphicx (which must be loaded).
          */
+        global $PAGE;
+        global $CFG;
         $res = new ConvertedTag;
         $res->recursive = false;
         if (!$e->hasAttribute('src')) {
@@ -207,6 +211,11 @@ class HtmlToTex
         }
         $imgSrc = $e->getAttribute('src');
         $imgTmpname = $this->tmpDir . '/' . md5($imgSrc).'.png';
+
+
+        //echo '<hr><pre>';
+        //print_r($url);
+        //die();
 
         $curl = curl_init($imgSrc);
         $fp = fopen($imgTmpname, "w");

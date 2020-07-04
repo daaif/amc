@@ -33,18 +33,24 @@ require_once __DIR__ . '/models/AmcProcessGrade.php';
 /**
  * Returns the information on whether the module supports a feature
  *
- * @see plugin_supports() in lib/moodlelib.php
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed true if the feature is supported, null if unknown
+ * @see plugin_supports() in lib/moodlelib.php
  */
-function automultiplechoice_supports($feature) {
-    switch($feature) {
-        case FEATURE_MOD_INTRO:         return false;
-        case FEATURE_GRADE_HAS_GRADE:   return true;
-        case FEATURE_GRADE_OUTCOMES:    return false;
-        case FEATURE_BACKUP_MOODLE2:    return true;
+function automultiplechoice_supports($feature)
+{
+    switch ($feature) {
+        case FEATURE_MOD_INTRO:
+            return false;
+        case FEATURE_GRADE_HAS_GRADE:
+            return true;
+        case FEATURE_GRADE_OUTCOMES:
+            return false;
+        case FEATURE_BACKUP_MOODLE2:
+            return true;
 
-        default:                        return null;
+        default:
+            return null;
     }
 }
 
@@ -60,7 +66,8 @@ function automultiplechoice_supports($feature) {
  * @param mod_automultiplechoice_mod_form $mform
  * @return int The id of the newly inserted automultiplechoice record
  */
-function automultiplechoice_add_instance(stdClass $automultiplechoice, mod_automultiplechoice_mod_form $mform = null) {
+function automultiplechoice_add_instance(stdClass $automultiplechoice, mod_automultiplechoice_mod_form $mform = null)
+{
     global $DB, $USER;
 
     $automultiplechoice->timecreated = $_SERVER['REQUEST_TIME'];
@@ -91,7 +98,8 @@ function automultiplechoice_add_instance(stdClass $automultiplechoice, mod_autom
  * @param mod_automultiplechoice_mod_form $mform
  * @return boolean Success/Fail
  */
-function automultiplechoice_update_instance(stdClass $automultiplechoice, mod_automultiplechoice_mod_form $mform = null) {
+function automultiplechoice_update_instance(stdClass $automultiplechoice, mod_automultiplechoice_mod_form $mform = null)
+{
     global $DB;
 
     $quizz = mod\automultiplechoice\Quizz::findById($automultiplechoice->instance);
@@ -124,11 +132,12 @@ function automultiplechoice_update_instance(stdClass $automultiplechoice, mod_au
  * @param int $id Id of the module instance
  * @return boolean Success/Failure
  */
-function automultiplechoice_delete_instance($id) {
+function automultiplechoice_delete_instance($id)
+{
     global $DB;
 
     $automultiplechoice = $DB->get_record('automultiplechoice', array('id' => $id));
-    if (! $automultiplechoice) {
+    if (!$automultiplechoice) {
         return false;
     }
 
@@ -148,7 +157,8 @@ function automultiplechoice_delete_instance($id) {
  *
  * @return stdClass|null
  */
-function automultiplechoice_user_outline($course, $user, $mod, $automultiplechoice) {
+function automultiplechoice_user_outline($course, $user, $mod, $automultiplechoice)
+{
 
     $return = new stdClass();
     $return->time = 0;
@@ -166,7 +176,8 @@ function automultiplechoice_user_outline($course, $user, $mod, $automultiplechoi
  * @param stdClass $automultiplechoice the module instance record
  * @return void, is supposed to echp directly
  */
-function automultiplechoice_user_complete($course, $user, $mod, $automultiplechoice) {
+function automultiplechoice_user_complete($course, $user, $mod, $automultiplechoice)
+{
 }
 
 /**
@@ -176,7 +187,8 @@ function automultiplechoice_user_complete($course, $user, $mod, $automultiplecho
  *
  * @return boolean
  */
-function automultiplechoice_print_recent_activity($course, $viewfullnames, $timestart) {
+function automultiplechoice_print_recent_activity($course, $viewfullnames, $timestart)
+{
     return false;  //  True if anything was printed, otherwise false
 }
 
@@ -196,15 +208,16 @@ function automultiplechoice_print_recent_activity($course, $viewfullnames, $time
  * @param int $groupid check for a particular group's activity only, defaults to 0 (all groups)
  * @return void adds items into $activities and increases $index
  */
-function automultiplechoice_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid=0, $groupid=0) {
+function automultiplechoice_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid = 0, $groupid = 0)
+{
 }
 
 /**
  * Prints single activity item prepared by {@see automultiplechoice_get_recent_mod_activity()}
-
  * @return void
  */
-function automultiplechoice_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
+function automultiplechoice_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames)
+{
 }
 
 /**
@@ -215,17 +228,19 @@ function automultiplechoice_print_recent_mod_activity($activity, $courseid, $det
  * @return boolean
  * @todo Finish documenting this function
  **/
-function automultiplechoice_cron () {
+function automultiplechoice_cron()
+{
     return true;
 }
 
 /**
  * Returns all other caps used in the module
  *
- * @example return array('moodle/site:accessallgroups');
  * @return array
+ * @example return array('moodle/site:accessallgroups');
  */
-function automultiplechoice_get_extra_capabilities() {
+function automultiplechoice_get_extra_capabilities()
+{
     return array();
 }
 
@@ -244,7 +259,8 @@ function automultiplechoice_get_extra_capabilities() {
  * @param int $automultiplechoiceid ID of an instance of this module
  * @return bool true if the scale is used by the given automultiplechoice instance
  */
-function automultiplechoice_scale_used($automultiplechoiceid, $scaleid) {
+function automultiplechoice_scale_used($automultiplechoiceid, $scaleid)
+{
     return false;
 }
 
@@ -256,7 +272,8 @@ function automultiplechoice_scale_used($automultiplechoiceid, $scaleid) {
  * @param $scaleid int
  * @return boolean true if the scale is used by any automultiplechoice instance
  */
-function automultiplechoice_scale_used_anywhere($scaleid) {
+function automultiplechoice_scale_used_anywhere($scaleid)
+{
     return false;
 }
 
@@ -269,15 +286,16 @@ function automultiplechoice_scale_used_anywhere($scaleid) {
  * @param mixed optional array/object of grade(s); 'reset' means reset grades in gradebook
  * @return void
  */
-function automultiplechoice_grade_item_update(stdClass $automultiplechoice, $grades=null) {
+function automultiplechoice_grade_item_update(stdClass $automultiplechoice, $grades = null)
+{
     global $CFG;
-    require_once($CFG->libdir.'/gradelib.php');
+    require_once($CFG->libdir . '/gradelib.php');
 
     $item = array();
     $item['itemname'] = clean_param($automultiplechoice->name, PARAM_NOTAGS);
     $item['gradetype'] = GRADE_TYPE_VALUE;
-    $item['grademax']  = $automultiplechoice->score;
-    $item['grademin']  = 0;
+    $item['grademax'] = $automultiplechoice->score;
+    $item['grademin'] = 0;
 
     grade_update('mod/automultiplechoice', $automultiplechoice->course, 'mod', 'automultiplechoice',
         $automultiplechoice->id, 0, $grades, $item);
@@ -292,9 +310,10 @@ function automultiplechoice_grade_item_update(stdClass $automultiplechoice, $gra
  * @param int $userid update grade of specific user only, 0 means all participants
  * @return void
  */
-function automultiplechoice_update_grades(stdClass $automultiplechoice, $userid = 0) {
+function automultiplechoice_update_grades(stdClass $automultiplechoice, $userid = 0)
+{
     global $CFG;
-    require_once($CFG->libdir.'/gradelib.php');
+    require_once($CFG->libdir . '/gradelib.php');
     require_once __DIR__ . '/models/AmcProcessGrade.php';
 
     $quizz = \mod\automultiplechoice\Quizz::buildFromRecord($automultiplechoice);
@@ -322,15 +341,13 @@ function automultiplechoice_update_grades(stdClass $automultiplechoice, $userid 
  * @param stdClass $context
  * @return array of [(string)filearea] => (string)description
  */
-function automultiplechoice_get_file_areas($course, $cm, $context) {
+function automultiplechoice_get_file_areas($course, $cm, $context)
+{
     return array();
 }
 
 /**
  * File browsing support for automultiplechoice file areas
- *
- * @package mod_automultiplechoice
- * @category files
  *
  * @param file_browser $browser
  * @param array $areas
@@ -342,16 +359,17 @@ function automultiplechoice_get_file_areas($course, $cm, $context) {
  * @param string $filepath
  * @param string $filename
  * @return file_info instance or null if not found
+ * @package mod_automultiplechoice
+ * @category files
+ *
  */
-function automultiplechoice_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
+function automultiplechoice_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename)
+{
     return null;
 }
 
 /**
  * Serves the files from the automultiplechoice file areas
- *
- * @package mod_automultiplechoice
- * @category files
  *
  * @param stdClass $course the course object
  * @param stdClass $cm the course module object
@@ -360,8 +378,12 @@ function automultiplechoice_get_file_info($browser, $areas, $course, $cm, $conte
  * @param array $args extra arguments (itemid, path)
  * @param bool $forcedownload whether or not force download
  * @param array $options additional options affecting the file serving
+ * @category files
+ *
+ * @package mod_automultiplechoice
  */
-function automultiplechoice_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options=array()) {
+function automultiplechoice_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options = array())
+{
     global $USER;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
@@ -372,61 +394,61 @@ function automultiplechoice_pluginfile($course, $cm, $context, $filearea, array 
 
     $filename = array_pop($args);
 
+    //echo "<hr><pre>";
+    //print_r($filename);
+    //die();
+
     $quizz = \mod\automultiplechoice\Quizz::findById($cm->instance);
     $process = new \mod\automultiplechoice\AmcProcessGrade($quizz, "latex");
 
     // First, the student use case: to download anotated answer sheet correction-0123456789-Surname.pdf
     // and corrigé
-    if (preg_match('/^Etudiant-[0-9]*\.pdf$/', $filename)) {
-        $target = $process->workdir . '/cr/corrections/pdf/' . $filename;
 
-        if (!file_exists($target)) {
-            send_file_not_found();
-        }
-        if (has_capability('mod/automultiplechoice:update', $context)
-            || (  $quizz->studentaccess && file_exists($target))
-            //|| (  $quizz->studentaccess && $USER->id.".pdf" === basename($filename))
-        ) {
+    $target = $process->workdir . '/cr/corrections/pdf/' . $filename;
 
-            send_file($target, $filename, 10, 0, false, false, 'application/pdf') ;
-            return true;
-        }
+    if (preg_match('/^Etudiant-[0-9]*\.pdf$/', $filename)
+        && (has_capability('mod/automultiplechoice:update', $context)
+            || ($quizz->studentaccess && file_exists($target)))) {
+
+        send_file($target, $filename, 10, 0, false, false, 'application/pdf');
+        return true;
     }
+
 
     $target = $process->workdir . '/cr/corrections/pdf/' . $filename;
     //if (preg_match('/^corrige-.*\.pdf$/', $filename)) {
     //if (file_exists($process->workdir . '/' . $filename)) {
     //if (   $quizz->corrigeaccess && file_exists("cr-".$USER->id.".pdf") )
-    if (  has_capability('mod/automultiplechoice:update', $context)
-        || ($quizz->corrigeaccess && file_exists($target)) )
-    {
-        send_file($target, $filename, 10, 0, false, false, 'application/pdf') ;
+    if (preg_match('/^corrige-.*\.pdf$/', $filename)
+        && (has_capability('mod/automultiplechoice:update', $context)
+        || ($quizz->corrigeaccess && file_exists($target)))) {
+        send_file($target, $filename, 10, 0, false, false, 'application/pdf');
         return true;
     }
 
-// }
+    // }
 
     // Then teacher only use cases
     require_capability('mod/automultiplechoice:update', $context);
 
     // whitelist security
     if (preg_match('/^(sujet|corrige|catalog)-.*\.pdf$/', $filename)) {
-        send_file($process->workdir .'/'. $filename, $filename, 10, 0, false, false, 'application/pdf') ;
+        send_file($process->workdir . '/' . $filename, $filename, 10, 0, false, false, 'application/pdf');
         return true;
     } elseif (preg_match('/^sujets-.*\.zip$/', $filename)) {
-        send_file($process->workdir . '/' . $filename, $filename, 10, 0, false, false, 'application/zip') ;
+        send_file($process->workdir . '/' . $filename, $filename, 10, 0, false, false, 'application/zip');
         return true;
     } elseif (preg_match('/^corrige-.*\.pdf$/', $filename)) {
-        send_file($process->workdir . '/cr/corrections/pdf/' . $filename, $filename, 10, 0, false, false, 'application/pdf') ;
+        send_file($process->workdir . '/cr/corrections/pdf/' . $filename, $filename, 10, 0, false, false, 'application/pdf');
         return true;
-    } elseif (preg_match('/^cr-[0-9]*\.pdf$/', $filename)) {
-        send_file($process->workdir . '/cr/corrections/pdf/' . $filename, $filename, 10, 0, false, false, 'application/pdf') ;
+    } elseif (preg_match('/^Etudiant-[0-9]*\.pdf$/', $filename)) {
+        send_file($process->workdir . '/cr/corrections/pdf/' . $filename, $filename, 10, 0, false, false, 'application/pdf');
         return true;
     } elseif (preg_match('/\.csv$/', $filename)) {
-        send_file($process->workdir . '/exports/' . $filename, $filename, 10, 0, false, false, 'text/csv') ;
+        send_file($process->workdir . '/exports/' . $filename, $filename, 10, 0, false, false, 'text/csv');
         return true;
     } elseif (preg_match('/\.ods$/', $filename)) {
-        send_file($process->workdir . '/exports/' . $filename, $filename, 10, 0, false, false, 'application/vnd.oasis.opendocument.spreadsheet') ;
+        send_file($process->workdir . '/exports/' . $filename, $filename, 10, 0, false, false, 'application/vnd.oasis.opendocument.spreadsheet');
         return true;
     }
     send_file_not_found();
@@ -446,7 +468,8 @@ function automultiplechoice_pluginfile($course, $cm, $context, $filearea, array 
  * @param stdClass $module
  * @param cm_info $cm
  */
-function automultiplechoice_extend_navigation(navigation_node $navref, stdclass $course, stdclass $module, cm_info $cm) {
+function automultiplechoice_extend_navigation(navigation_node $navref, stdclass $course, stdclass $module, cm_info $cm)
+{
 }
 
 /**
@@ -458,10 +481,12 @@ function automultiplechoice_extend_navigation(navigation_node $navref, stdclass 
  * @param settings_navigation $settingsnav {@link settings_navigation}
  * @param navigation_node $automultiplechoicenode {@link navigation_node}
  */
-function automultiplechoice_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $automultiplechoicenode=null) {
+function automultiplechoice_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $automultiplechoicenode = null)
+{
 }
 
-function automultiplechoice_questions_in_use($questionids) {
+function automultiplechoice_questions_in_use($questionids)
+{
     global $DB;
     $records = $DB->get_recordset('automultiplechoice');
     foreach ($records as $record) {

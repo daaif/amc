@@ -184,6 +184,7 @@ EOL;
                 . $this->htmlToLatex(format_text($question->questiontext, $question->questiontextformat, ['filter' => false]))
                 . ($dp == \mod\automultiplechoice\AmcParams::DISPLAY_POINTS_END ? ' ' . $pointsTxt : '');
 
+
         // answers
         $answersText = '';
         $answers = $DB->get_records('question_answers', array('question' => $question->id));
