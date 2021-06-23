@@ -2,6 +2,7 @@ Auto Multiple Choice (AMC) for Moodle
 =====================================
 
 ### Updated at 20200628 By A. DAAIF
+### Hassan II University of Casablanca
 ### Forked from : 
 [UGA-DAPI](https://github.com/UGA-DAPI/moodle-mod-automultiplechoice) repository.
 
